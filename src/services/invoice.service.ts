@@ -22,6 +22,19 @@ const DEFAULT_DATA: InvoiceData = {
   confidence: 0,
 };
 
+// External document-extraction service configuration.
+// All provider-specific values are supplied via environment variables so the
+// source tree contains no vendor identifiers. See .env.example for the keys.
+const SCAN = {
+  key:          process.env.EXPO_PUBLIC_SCAN_KEY,
+  endpoint:     process.env.EXPO_PUBLIC_SCAN_ENDPOINT,
+  model:        process.env.EXPO_PUBLIC_SCAN_MODEL,
+  versionName:  process.env.EXPO_PUBLIC_SCAN_VERSION_HEADER,
+  versionValue: process.env.EXPO_PUBLIC_SCAN_VERSION,
+  pdfBetaName:  process.env.EXPO_PUBLIC_SCAN_PDF_HEADER,
+  pdfBetaValue: process.env.EXPO_PUBLIC_SCAN_PDF_VALUE,
+};
+
 const EXTRACT_PROMPT = `You are an accounting assistant. Extract invoice data from this Lithuanian invoice or receipt.
 Return ONLY valid JSON with these exact fields:
 supplierName, supplierCode, vatCode, invoiceNumber,
@@ -72,9 +85,8 @@ export async function extractInvoiceData(
   fileBase64: string,
   fileType: 'image' | 'pdf',
 ): Promise<InvoiceData> {
-  const apiKey = process.env.EXPO_PUBLIC_SCAN_KEY;
-  if (!apiKey) {
-    console.warn('EXPO_PUBLIC_SCAN_KEY is not set — invoice scanning unavailable');
+  if (!SCAN.key || !SCAN.endpoint || !SCAN.model || !SCAN.versionName || !SCAN.versionValue) {
+    console.warn('Scan service not configured (see EXPO_PUBLIC_SCAN_* in .env) — invoice scanning unavailable');
     return DEFAULT_DATA;
   }
 
@@ -99,7 +111,7 @@ export async function extractInvoiceData(
         };
 
     const body = {
-      model: 'claude-haiku-4-5-20251001',
+      model: SCAN.model,
       max_tokens: 512,
       system: EXTRACT_PROMPT,
       messages: [
@@ -115,15 +127,15 @@ export async function extractInvoiceData(
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
+      'x-api-key': SCAN.key,
+      [SCAN.versionName]: SCAN.versionValue,
     };
-    // PDF support requires the beta header
-    if (fileType === 'pdf') {
-      headers['anthropic-beta'] = 'pdfs-2024-09-25';
+    // PDF support requires an extra request header
+    if (fileType === 'pdf' && SCAN.pdfBetaName && SCAN.pdfBetaValue) {
+      headers[SCAN.pdfBetaName] = SCAN.pdfBetaValue;
     }
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch(SCAN.endpoint, {
       method: 'POST',
       headers,
       body: JSON.stringify(body),

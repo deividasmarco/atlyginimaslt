@@ -49,7 +49,7 @@ Registruoti naudotojai: duomenys šifruotai saugomi „Google Firebase" (Firesto
 6. Trečiųjų šalių paslaugos
 
 • Google Firebase – autentifikacija ir duomenų bazė
-• Anthropic API – tik sąskaitų nuskaitymo funkcijai (neprivaloma)
+• Dokumentų apdorojimo paslauga – tik sąskaitų nuskaitymo funkcijai (neprivaloma)
 
 7. Jūsų teisės (BDAR)
 
@@ -113,7 +113,7 @@ Registered users: data is stored encrypted in Google Firebase (Firestore) on Eur
 6. Third-Party Services
 
 • Google Firebase – authentication and database
-• Anthropic API – invoice scanning only (optional)
+• Document-processing service – invoice scanning only (optional)
 
 7. Your Rights (GDPR)
 
