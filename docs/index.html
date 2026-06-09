@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlyginimas LT</title>
+<style>
+  :root { --fg:#0f1623; --muted:#5c6678; --bg:#080c14; --card:#0f1726; --accent:#4f8ef7; --line:#1d2940; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+         color:#e7ecf5; background:var(--bg); line-height:1.6; }
+  .wrap { max-width:720px; margin:0 auto; padding:64px 22px 80px; }
+  .logo { width:72px; height:72px; border-radius:20px; background:linear-gradient(135deg,#4f8ef7,#7b5cff);
+          display:flex; align-items:center; justify-content:center; font-size:34px; margin-bottom:22px; }
+  h1 { font-size:32px; margin:0 0 8px; }
+  .tag { color:#9aa6bd; font-size:17px; margin:0 0 36px; }
+  .grid { display:grid; gap:14px; grid-template-columns:1fr 1fr; margin:30px 0; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; }
+  .card h3 { margin:0 0 6px; font-size:16px; }
+  .card p { margin:0; color:#9aa6bd; font-size:14px; }
+  h2 { font-size:20px; margin:40px 0 12px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .links a { display:inline-block; margin-right:18px; font-weight:600; }
+  .disclaimer { background:#141d2e; border:1px solid var(--line); border-radius:12px; padding:16px 18px;
+                color:#9aa6bd; font-size:14px; margin-top:30px; }
+  footer { color:#5c6678; font-size:13px; margin-top:50px; border-top:1px solid var(--line); padding-top:20px; }
+  @media (max-width:560px){ .grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">€</div>
+  <h1>Atlyginimas LT</h1>
+  <p class="tag">Lithuanian tax &amp; accounting assistant for the self-employed (IV &amp; MB).</p>
+
+  <div class="grid">
+    <div class="card"><h3>Tax calculator</h3><p>GPM, PSD, VSD for individual activity and small partnerships.</p></div>
+    <div class="card"><h3>Journal &amp; invoices</h3><p>Cash-basis bookkeeping, clients, and PDF reports.</p></div>
+    <div class="card"><h3>Loan income</h3><p>Estimate mortgage-qualifying income from self-employment.</p></div>
+    <div class="card"><h3>Cloud sync</h3><p>Secure sync across devices, with a full offline mode.</p></div>
+  </div>
+
+  <h2>Support</h2>
+  <p>Questions, feedback, or help with your account? Email
+     <a href="mailto:deividasmar@gmail.com">deividasmar@gmail.com</a> — we usually reply within 1–2 business days.</p>
+
+  <h2>Legal</h2>
+  <p class="links">
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms of Use</a>
+  </p>
+
+  <div class="disclaimer">
+    <strong>Disclaimer.</strong> Atlyginimas LT is an informational tool. All calculations are indicative
+    estimates based on publicly available VMI and Sodra data and do not constitute financial, legal, or
+    accounting advice. Always verify with a qualified accountant before making financial decisions.
+  </div>
+
+  <footer>© 2026 Atlyginimas LT. All rights reserved.</footer>
+</div>
+</body>
+</html>

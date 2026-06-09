@@ -1,0 +1,58 @@
+# ─────────────────────────────────────────────
+# Atlyginimas LT — .gitignore
+# ─────────────────────────────────────────────
+
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+*.orig.*
+
+# Native build output
+android/
+ios/
+*.apk
+*.aab
+*.ipa
+*.app
+
+# Metro
+.metro-health-check*
+
+# Environment variables & secrets (NEVER commit)
+.env
+.env.*
+!.env.example
+google-services.json
+GoogleService-Info.plist
+*.keystore
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+
+# Logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.log
+
+# macOS / Windows / editors
+.DS_Store
+Thumbs.db
+*.pem
+.idea/
+.vscode/
+*.swp
+
+# TypeScript
+*.tsbuildinfo
+
+# EAS
+.eas/
