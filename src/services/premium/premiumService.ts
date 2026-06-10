@@ -20,9 +20,11 @@ const RC_TEST_KEY     = 'test_ukeejbWeLCIntdkNnBmleDmgbel';
 const RC_IOS_KEY      = '';   // appl_… (set for production)
 const RC_ANDROID_KEY  = '';   // goog_… (set for production)
 
-function apiKey(): string {
+function apiKey(): string | null {
   const platformKey = Platform.OS === 'ios' ? RC_IOS_KEY : RC_ANDROID_KEY;
-  return platformKey || RC_TEST_KEY;
+  if (platformKey) return platformKey;        // real production key (appl_… / goog_…)
+  if (__DEV__) return RC_TEST_KEY;            // test key ONLY in dev builds (Metro)
+  return null;                                // release build without a real key → don't configure
 }
 
 // ⚠️ Must match the entitlement IDENTIFIER in the RevenueCat dashboard exactly.
@@ -59,8 +61,15 @@ function getUI(): any {
 
 export async function configurePurchases(userId?: string): Promise<void> {
   if (!isPurchasesAvailable() || configured) return;
+  const key = apiKey();
+  if (!key) {
+    // Release build with no production key — skip RevenueCat entirely so the
+    // SDK never force-closes the app over a test key. Purchases stay disabled.
+    console.warn('[Premium] No production RevenueCat key set — purchases disabled');
+    return;
+  }
   try {
-    Purchases.configure({ apiKey: apiKey(), appUserID: userId });
+    Purchases.configure({ apiKey: key, appUserID: userId });
     configured = true;
   } catch (e) {
     console.warn('[Premium] configure failed:', (e as any)?.message);
