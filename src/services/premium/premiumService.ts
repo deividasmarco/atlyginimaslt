@@ -17,7 +17,7 @@ const IS_EXPO_GO =
 // Test Store key — works in dev builds without App Store / Play products.
 // For production, replace with platform keys: appl_… (iOS), goog_… (Android).
 const RC_TEST_KEY     = 'test_ukeejbWeLCIntdkNnBmleDmgbel';
-const RC_IOS_KEY      = '';   // appl_… (set for production)
+const RC_IOS_KEY      = 'appl_eNpJlLWrNJpkVIKrAcxWDZqKbtU';   // appl_… (iOS production)
 const RC_ANDROID_KEY  = '';   // goog_… (set for production)
 
 function apiKey(): string | null {
