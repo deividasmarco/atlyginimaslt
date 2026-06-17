@@ -56,7 +56,7 @@ Sąlygos gali būti keičiamos. Apie esminius pakeitimus informuosime per progra
 
 9. Kontaktai
 
-Klausimams: deividasmar@gmail.com`;
+Klausimams: pagalba@atlyginimaslt.lt`;
 
 const TERMS_EN = `Terms of Use
 
@@ -108,7 +108,7 @@ These terms are governed by the law of the Republic of Lithuania.
 
 9. Contact
 
-Questions: deividasmar@gmail.com`;
+Questions: pagalba@atlyginimaslt.lt`;
 
 export default function TermsScreen() {
   const { language } = useSettingsStore();

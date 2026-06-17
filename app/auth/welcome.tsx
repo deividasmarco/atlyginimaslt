@@ -120,7 +120,7 @@ const s = StyleSheet.create({
   hero:       { alignItems: 'center', paddingTop: 8 },
   logoWrap:   { width: 80, height: 80, borderRadius: 24, backgroundColor: Colors.blue, alignItems: 'center', justifyContent: 'center', marginBottom: 20, shadowColor: Colors.blue, shadowOpacity: 0.4, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, elevation: 12 },
   logoLetter: { fontSize: 42, fontWeight: '900', color: '#fff', lineHeight: 50 },
-  appName:    { fontSize: 30, fontWeight: '800', color: Colors.text1, letterSpacing: -0.5, marginBottom: 10 },
+  appName:    { fontSize: 31, fontWeight: '900', color: Colors.text1, letterSpacing: -0.8, marginBottom: 10 },
   tagline:    { fontSize: 15, color: Colors.text2, textAlign: 'center', lineHeight: 23 },
 
   featureList: { gap: 14, paddingVertical: 8 },

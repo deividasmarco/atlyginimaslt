@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch, StyleSheet, Alert, TextInput, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, StyleSheet, Alert, TextInput, Modal, ActivityIndicator, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
@@ -272,6 +272,22 @@ export default function SettingsScreen() {
             </View>
           ))}
           {/* Privacy and Terms moved to bottom of settings */}
+        </View>
+
+        {/* Support */}
+        <Text style={s.sectionLbl}>{t('settings.support')}</Text>
+        <View style={s.card}>
+          <TouchableOpacity
+            style={s.optRow}
+            onPress={() => Linking.openURL('mailto:pagalba@atlyginimaslt.lt')}
+            activeOpacity={0.7}
+          >
+            <View style={s.optLeft}>
+              <Text style={s.optLbl}>{t('settings.contactSupport')}</Text>
+              <Text style={s.optSub}>pagalba@atlyginimaslt.lt</Text>
+            </View>
+            <Text style={{ color: Colors.blue, fontSize: 20 }}>›</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Account */}

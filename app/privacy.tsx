@@ -69,7 +69,7 @@ Apie esminius privatumo politikos pakeitimus informuosime per programėlę.
 
 10. Kontaktai
 
-Klausimams dėl asmens duomenų: deividasmar@gmail.com`;
+Klausimams dėl asmens duomenų: pagalba@atlyginimaslt.lt`;
 
 const PRIVACY_EN = `Privacy Policy
 
@@ -133,7 +133,7 @@ We will notify you of significant privacy policy changes through the app.
 
 10. Contact
 
-For personal data questions: deividasmar@gmail.com`;
+For personal data questions: pagalba@atlyginimaslt.lt`;
 
 export default function PrivacyScreen() {
   const { t }      = useTranslation();

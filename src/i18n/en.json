@@ -153,6 +153,7 @@
     "dataLabel": "Data", "dataVal": "VMI, Sodra 2026",
     "lastUpdate": "Last updated", "lastUpdateVal": "January 2026",
     "privacy": "Privacy policy", "terms": "Terms of use",
+    "support": "Support", "contactSupport": "Contact support",
     "disclaimer": "For informational purposes only. Exact taxes may differ — consult an accountant or tax advisor.\nData: VMI, Sodra 2026.",
     "employee": "👔 Employee", "empDesc": "Working under an employment contract",
     "iv": "💼 Self-employed", "ivDesc": "Working independently (IV certificate)",
