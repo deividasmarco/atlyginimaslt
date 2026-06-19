@@ -249,7 +249,7 @@ const s = StyleSheet.create({
 
   devNote: { fontSize: 12, color: Colors.amber, textAlign: 'center', lineHeight: 18, marginBottom: 14, backgroundColor: Colors.amberDim, borderRadius: 10, padding: 12 },
   legal:   { fontSize: 11, color: Colors.text3, textAlign: 'center', lineHeight: 17 },
-  legalLinks: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 12 },
-  legalLink:  { fontSize: 12, color: Colors.blue, fontWeight: '600' },
-  legalDot:   { fontSize: 12, color: Colors.text3 },
+  legalLinks: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 14 },
+  legalLink:  { fontSize: 13, color: Colors.blue, fontWeight: '600', textDecorationLine: 'underline' },
+  legalDot:   { fontSize: 13, color: Colors.text3 },
 });

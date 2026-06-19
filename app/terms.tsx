@@ -54,7 +54,11 @@ Sąlygos gali būti keičiamos. Apie esminius pakeitimus informuosime per progra
 
 Šioms sąlygoms taikoma Lietuvos Respublikos teisė.
 
-9. Kontaktai
+9. Prenumeratos ir mokėjimai
+
+„Premium" funkcijos pasiekiamos per automatiškai atsinaujinančias prenumeratas (mėnesinę ar metinę) arba vienkartinį „visam laikui" pirkimą. Mokestis nuskaitomas iš jūsų „App Store" arba „Google Play" paskyros patvirtinus pirkimą. Mėnesinė ir metinė prenumerata atsinaujina automatiškai, nebent ją atšaukiate likus bent 24 val. iki esamo laikotarpio pabaigos. Prenumeratas galite valdyti ar atšaukti bet kada paskyros nustatymuose. „Visam laikui" pirkimas yra vienkartinis ir neatsinaujina.
+
+10. Kontaktai
 
 Klausimams: pagalba@atlyginimaslt.lt`;
 
@@ -106,7 +110,11 @@ Terms may be updated. We will notify you of significant changes through the app.
 
 These terms are governed by the law of the Republic of Lithuania.
 
-9. Contact
+9. Subscriptions and Payments
+
+Premium features are available via auto-renewing subscriptions (monthly or yearly) or a one-time lifetime purchase. Payment is charged to your App Store or Google Play account at confirmation. Monthly and yearly subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period. You can manage or cancel subscriptions any time in your account settings. The lifetime purchase is a single payment and does not renew.
+
+10. Contact
 
 Questions: pagalba@atlyginimaslt.lt`;
 
