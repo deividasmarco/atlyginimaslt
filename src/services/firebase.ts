@@ -20,7 +20,6 @@ const firebaseConfig = {
   storageBucket:     'atlyginimaslt.firebasestorage.app',
   messagingSenderId: '498656657789',
   appId:             '1:498656657789:web:f397a157f8ced1c99c4c14',
-  measurementId:     'G-3SDB2HVQP6',
 };
 
 let _app:  any = null;

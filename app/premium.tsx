@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, Alert,
+  View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../src/constants/colors';
 import { useAuthStore } from '../src/stores/authStore';
+import { useSettingsStore } from '../src/stores/settingsStore';
+
+const EULA_URL    = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
+const PRIVACY_URL = 'https://atlyginimaslt.lt/privatumas.html';
 import {
   isPurchasesAvailable, getPremiumOffer, purchasePremium, restorePremium,
   presentNativePaywall, checkEntitlement, PlanType,
@@ -25,6 +29,8 @@ const FEATURES: { icon: keyof typeof Ionicons.glyphMap; text: string }[] = [
 export default function PremiumScreen() {
   const router = useRouter();
   const { setPremium, isPremium } = useAuthStore();
+  const { language } = useSettingsStore();
+  const isEN = language === 'en';
 
   const available = isPurchasesAvailable();
   const [plan, setPlan]       = useState<PlanType>('yearly');
@@ -193,19 +199,18 @@ export default function PremiumScreen() {
         )}
 
         <Text style={s.legal}>
-          Metinė ir mėnesinė prenumerata atsinaujina automatiškai pasibaigus laikotarpiui,
-          nebent ją atšaukiate likus bent 24 val. iki termino pabaigos. Mokestis nuskaitomas
-          iš jūsų App Store arba Google Play paskyros. Prenumeratą galite valdyti ar atšaukti
-          bet kada paskyros nustatymuose. „Visam laikui" – vienkartinis mokėjimas, neatsinaujina.
+          {isEN
+            ? 'Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Payment is charged to your Apple ID account. You can manage or cancel your subscription in your device settings. “Lifetime” is a one-time purchase and does not renew.'
+            : 'Prenumerata atsinaujina automatiškai, jei neatšaukiama likus bent 24 val. iki esamo laikotarpio pabaigos. Mokestis nuskaitomas iš „Apple ID" paskyros. Prenumeratą galite valdyti ar atšaukti įrenginio nustatymuose. „Visam laikui" yra vienkartinis pirkimas, neatsinaujina.'}
         </Text>
 
         <View style={s.legalLinks}>
-          <TouchableOpacity onPress={() => router.push('/terms')}>
-            <Text style={s.legalLink}>Naudojimo sąlygos</Text>
+          <TouchableOpacity onPress={() => Linking.openURL(EULA_URL)}>
+            <Text style={s.legalLink}>{isEN ? 'Terms of Use' : 'Naudojimo sąlygos'}</Text>
           </TouchableOpacity>
           <Text style={s.legalDot}>·</Text>
-          <TouchableOpacity onPress={() => router.push('/privacy')}>
-            <Text style={s.legalLink}>Privatumo politika</Text>
+          <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_URL)}>
+            <Text style={s.legalLink}>{isEN ? 'Privacy Policy' : 'Privatumo politika'}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
