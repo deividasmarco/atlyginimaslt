@@ -13,7 +13,7 @@ const EULA_URL    = 'https://www.apple.com/legal/internet-services/itunes/dev/st
 const PRIVACY_URL = 'https://atlyginimaslt.lt/privatumas.html';
 import {
   isPurchasesAvailable, getPremiumOffer, purchasePremium, restorePremium,
-  presentNativePaywall, checkEntitlement, PlanType,
+  PlanType, PremiumOffer,
 } from '../src/services/premium/premiumService';
 
 const FEATURES: { icon: keyof typeof Ionicons.glyphMap; text: string }[] = [
@@ -35,18 +35,42 @@ export default function PremiumScreen() {
   const available = isPurchasesAvailable();
   const [plan, setPlan]       = useState<PlanType>('yearly');
   const [loading, setLoading] = useState(false);
-  const [monthlyPrice,  setMonthlyPrice]  = useState('2,99 €');
-  const [yearlyPrice,   setYearlyPrice]   = useState('24,99 €');
-  const [lifetimePrice, setLifetimePrice] = useState('59,99 €');
+  const [offer, setOffer]     = useState<PremiumOffer | null>(null);
 
   useEffect(() => {
     if (!available) return;
     getPremiumOffer().then(o => {
-      if (o.monthlyPriceString)  setMonthlyPrice(o.monthlyPriceString);
-      if (o.yearlyPriceString)   setYearlyPrice(o.yearlyPriceString);
-      if (o.lifetimePriceString) setLifetimePrice(o.lifetimePriceString);
+      setOffer(o);
+      // default to the first available plan, preferring yearly
+      if (o.yearly)        setPlan('yearly');
+      else if (o.monthly)  setPlan('monthly');
+      else if (o.lifetime) setPlan('lifetime');
     });
   }, [available]);
+
+  // In Expo Go (no native module) we can't fetch real prices — show
+  // placeholders for dev testing only. The App Store build always uses live prices.
+  const FALLBACK: Record<PlanType, string> = { monthly: '2,99 €', yearly: '24,99 €', lifetime: '59,99 €' };
+  const planInfo = (p: PlanType) => p === 'yearly' ? offer?.yearly : p === 'lifetime' ? offer?.lifetime : offer?.monthly;
+  const priceStr = (p: PlanType): string | null => available ? (planInfo(p)?.priceString ?? null) : FALLBACK[p];
+  const showCard = (p: PlanType): boolean => available ? !!planInfo(p) : true;
+
+  // Discount badge computed from real prices, never hardcoded.
+  const discountPct = (() => {
+    const m = available ? offer?.monthly?.price : 2.99;
+    const y = available ? offer?.yearly?.price  : 24.99;
+    if (!m || !y) return 0;
+    const pct = Math.round((1 - y / (m * 12)) * 100);
+    return pct > 0 ? pct : 0;
+  })();
+
+  const PLAN_DEFS: { key: PlanType; name: string; per: string }[] = [
+    { key: 'yearly',   name: isEN ? 'Annual'   : 'Metinis',      per: isEN ? '/year' : '/metus' },
+    { key: 'monthly',  name: isEN ? 'Monthly'  : 'Mėnesinis',    per: isEN ? '/mo'   : '/mėn.' },
+    { key: 'lifetime', name: isEN ? 'Lifetime' : 'Visam laikui', per: isEN ? ' once' : ' vienkart.' },
+  ];
+
+  const offerLoading = available && offer === null;
 
   const planLabel = (p: PlanType) => p === 'yearly' ? 'annual' : p === 'lifetime' ? 'lifetime' : 'monthly';
 
@@ -65,17 +89,9 @@ export default function PremiumScreen() {
     }
     setLoading(true);
     try {
-      // Prefer the RevenueCat-hosted paywall (dashboard-designed) when available;
-      // fall back to direct package purchase otherwise.
-      const native = await presentNativePaywall();
-      let ok: boolean;
-      if (native === true) {
-        ok = true;
-      } else if (native === false) {
-        ok = await checkEntitlement(); // user cancelled native paywall
-      } else {
-        ok = await purchasePremium(plan); // native paywall not available
-      }
+      // Purchase the selected package directly so every plan (including the
+      // non-subscription Lifetime) is reachable and prices stay live.
+      const ok = await purchasePremium(plan);
       if (ok) {
         setPremium(true, planLabel(plan));
         Alert.alert('Sėkmingai!', 'Premium aktyvuotas. Ačiū!');
@@ -148,44 +164,51 @@ export default function PremiumScreen() {
         </View>
 
         {/* Plans */}
-        <View style={s.plans}>
-          <TouchableOpacity
-            style={[s.planCard, plan === 'yearly' && s.planCardOn]}
-            onPress={() => setPlan('yearly')}
-          >
-            <View style={s.planTop}>
-              <Text style={[s.planName, plan === 'yearly' && { color: Colors.blue }]}>Metinis</Text>
-              <View style={s.saveBadge}><Text style={s.saveBadgeTxt}>−30%</Text></View>
-            </View>
-            <Text style={s.planPrice}>{yearlyPrice}<Text style={s.planPer}>/metus</Text></Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[s.planCard, plan === 'monthly' && s.planCardOn]}
-            onPress={() => setPlan('monthly')}
-          >
-            <View style={s.planTop}>
-              <Text style={[s.planName, plan === 'monthly' && { color: Colors.blue }]}>Mėnesinis</Text>
-            </View>
-            <Text style={s.planPrice}>{monthlyPrice}<Text style={s.planPer}>/mėn.</Text></Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[s.planCard, plan === 'lifetime' && s.planCardOn]}
-            onPress={() => setPlan('lifetime')}
-          >
-            <View style={s.planTop}>
-              <Text style={[s.planName, plan === 'lifetime' && { color: Colors.blue }]}>Visam laikui</Text>
-              <View style={[s.saveBadge, { backgroundColor: Colors.purple }]}><Text style={[s.saveBadgeTxt, { color: '#fff' }]}>Vienkartinis</Text></View>
-            </View>
-            <Text style={s.planPrice}>{lifetimePrice}<Text style={s.planPer}> vienkart.</Text></Text>
-          </TouchableOpacity>
-        </View>
+        {offerLoading ? (
+          <View style={s.plansLoading}>
+            <ActivityIndicator color={Colors.blue} />
+            <Text style={s.plansLoadingTxt}>{isEN ? 'Loading prices…' : 'Kraunamos kainos…'}</Text>
+          </View>
+        ) : (
+          <View style={s.plans}>
+            {PLAN_DEFS.filter(d => showCard(d.key)).map(d => {
+              const ps = priceStr(d.key);
+              const on = plan === d.key;
+              return (
+                <TouchableOpacity
+                  key={d.key}
+                  style={[s.planCard, on && s.planCardOn]}
+                  onPress={() => setPlan(d.key)}
+                >
+                  <View style={s.planTop}>
+                    <Text style={[s.planName, on && { color: Colors.blue }]}>{d.name}</Text>
+                    {d.key === 'yearly' && discountPct > 0 && (
+                      <View style={s.saveBadge}><Text style={s.saveBadgeTxt}>−{discountPct}%</Text></View>
+                    )}
+                    {d.key === 'lifetime' && (
+                      <View style={[s.saveBadge, { backgroundColor: Colors.purple }]}>
+                        <Text style={[s.saveBadgeTxt, { color: '#fff' }]}>{isEN ? 'One-time' : 'Vienkartinis'}</Text>
+                      </View>
+                    )}
+                  </View>
+                  {ps
+                    ? <Text style={s.planPrice}>{ps}<Text style={s.planPer}>{d.per}</Text></Text>
+                    : <ActivityIndicator color={Colors.blue} style={{ alignSelf: 'flex-start', marginTop: 4 }} />}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        )}
 
         {/* CTA */}
-        <TouchableOpacity style={[s.cta, loading && { opacity: 0.6 }]} onPress={handleContinue} disabled={loading}>
-          {loading ? <ActivityIndicator color="#fff" /> : <Text style={s.ctaTxt}>Tęsti</Text>}
-        </TouchableOpacity>
+        {(() => {
+          const ctaDisabled = loading || offerLoading || (available && !showCard(plan));
+          return (
+            <TouchableOpacity style={[s.cta, ctaDisabled && { opacity: 0.6 }]} onPress={handleContinue} disabled={ctaDisabled}>
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={s.ctaTxt}>{isEN ? 'Continue' : 'Tęsti'}</Text>}
+            </TouchableOpacity>
+          );
+        })()}
 
         <TouchableOpacity style={s.restoreBtn} onPress={handleRestore} disabled={loading}>
           <Text style={s.restoreTxt}>Atkurti pirkimus</Text>
@@ -238,6 +261,8 @@ const s = StyleSheet.create({
   featureTxt: { flex: 1, fontSize: 14, color: Colors.text1, fontWeight: '500' },
 
   plans:    { gap: 10, marginBottom: 20 },
+  plansLoading:    { alignItems: 'center', justifyContent: 'center', paddingVertical: 28, marginBottom: 20, gap: 10 },
+  plansLoadingTxt: { fontSize: 13, color: Colors.text3 },
   planCard: { backgroundColor: Colors.surface1, borderRadius: 16, padding: 16, borderWidth: 2, borderColor: Colors.border },
   planCardOn:{ borderColor: Colors.blue, backgroundColor: Colors.blueDim },
   planTop:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },

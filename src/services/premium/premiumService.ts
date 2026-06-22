@@ -86,49 +86,64 @@ export async function checkEntitlement(): Promise<boolean> {
   }
 }
 
+export interface PlanInfo { priceString: string; price: number; }
 export interface PremiumOffer {
-  monthlyPriceString?: string;
-  yearlyPriceString?: string;
-  lifetimePriceString?: string;
   hasOfferings: boolean;
+  monthly?:  PlanInfo;
+  yearly?:   PlanInfo;
+  lifetime?: PlanInfo;
 }
 
-export async function getPremiumOffer(): Promise<PremiumOffer> {
-  if (!isPurchasesAvailable()) return { hasOfferings: false };
+/**
+ * Classify the current offering's packages into monthly / yearly / lifetime.
+ * Tolerant of how each product is attached in the RevenueCat dashboard:
+ * by package type first, then by product identifier, and finally the
+ * non-subscription product is treated as lifetime (covers the non-consumable).
+ */
+function classify(pkgs: any[]) {
+  const idOf   = (p: any) => (p?.product?.identifier ?? '').toLowerCase();
+  const byType = (t: string) => pkgs.find(p => p.packageType === t);
+  const byId   = (...subs: string[]) => pkgs.find(p => subs.some(s => idOf(p).includes(s)));
+
+  const monthly = byType('MONTHLY') ?? byId('month');
+  const yearly  = byType('ANNUAL')  ?? byId('year', 'annual');
+  const lifetime =
+    byType('LIFETIME') ??
+    byId('lifetime') ??
+    pkgs.find(p =>
+      p !== monthly && p !== yearly &&
+      (p.product?.productCategory === 'NON_SUBSCRIPTION' || !p.product?.subscriptionPeriod));
+
+  return { monthly, yearly, lifetime };
+}
+
+async function currentPackages(): Promise<any[]> {
+  if (!isPurchasesAvailable()) return [];
   try {
     const offerings = await Purchases.getOfferings();
-    const current = offerings?.current;
-    if (!current) return { hasOfferings: false };
-    const find = (type: string) =>
-      current.availablePackages.find((p: any) => p.packageType === type)?.product?.priceString;
-    return {
-      monthlyPriceString:  find('MONTHLY'),
-      yearlyPriceString:   find('ANNUAL'),
-      lifetimePriceString: find('LIFETIME'),
-      hasOfferings: true,
-    };
+    return offerings?.current?.availablePackages ?? [];
   } catch {
-    return { hasOfferings: false };
+    return [];
   }
 }
 
-function packageTypeFor(plan: PlanType): string {
-  if (plan === 'yearly')   return 'ANNUAL';
-  if (plan === 'lifetime') return 'LIFETIME';
-  return 'MONTHLY';
+export async function getPremiumOffer(): Promise<PremiumOffer> {
+  const pkgs = await currentPackages();
+  if (!pkgs.length) return { hasOfferings: false };
+  const c = classify(pkgs);
+  const info = (p: any): PlanInfo | undefined =>
+    p ? { priceString: p.product.priceString, price: Number(p.product.price) } : undefined;
+  return { hasOfferings: true, monthly: info(c.monthly), yearly: info(c.yearly), lifetime: info(c.lifetime) };
 }
 
-/** Launches the native purchase sheet. Returns true if entitlement is active afterwards. */
+/** Purchases the selected plan's package directly (works for the
+ *  non-consumable lifetime too). Returns true if the entitlement is active. */
 export async function purchasePremium(plan: PlanType): Promise<boolean> {
   if (!isPurchasesAvailable()) throw new Error('PURCHASES_UNAVAILABLE');
-  const offerings = await Purchases.getOfferings();
-  const current = offerings?.current;
-  if (!current) throw new Error('NO_OFFERING');
-
-  const want = packageTypeFor(plan);
-  const pkg =
-    current.availablePackages.find((p: any) => p.packageType === want) ??
-    current.availablePackages[0];
+  const pkgs = await currentPackages();
+  if (!pkgs.length) throw new Error('NO_OFFERING');
+  const c = classify(pkgs);
+  const pkg = plan === 'yearly' ? c.yearly : plan === 'lifetime' ? c.lifetime : c.monthly;
   if (!pkg) throw new Error('NO_PACKAGE');
 
   const { customerInfo } = await Purchases.purchasePackage(pkg);
