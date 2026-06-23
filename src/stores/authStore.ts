@@ -47,7 +47,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ hasSkippedAuth: true, isLoading: false });
   },
   logout:     () => {
-    AsyncStorage.multiRemove([GUEST_FLAG_KEY, PREMIUM_KEY, PREMIUM_PLAN_KEY]).catch(() => {});
-    set({ user: null, isPremium: false, subscriptionPlan: 'free', hasSkippedAuth: false });
+    // Premium is tied to the Apple ID / Google account purchase (via RevenueCat),
+    // NOT the app login — keep it across logout so users aren't asked to buy again.
+    AsyncStorage.removeItem(GUEST_FLAG_KEY).catch(() => {});
+    set({ user: null, hasSkippedAuth: false });
   },
 }));

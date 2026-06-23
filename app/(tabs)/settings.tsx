@@ -25,7 +25,7 @@ export default function SettingsScreen() {
   const { t } = useTranslation();
   const settings = useSettingsStore();
   const bp       = useBusinessStore();
-  const { isPremium, user, logout } = useAuthStore();
+  const { isPremium, subscriptionPlan, user, logout } = useAuthStore();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePassword,  setDeletePassword]  = useState('');
   const [deleteLoading,   setDeleteLoading]   = useState(false);
@@ -106,11 +106,16 @@ export default function SettingsScreen() {
             <Text style={s.premiumStar}>✓</Text>
             <Text style={[s.premiumTitle, { color: Colors.green }]}>{t('settings.premiumActive')}</Text>
             <Text style={s.premiumDesc}>{t('settings.premiumActiveDesc')}</Text>
+            {subscriptionPlan !== 'lifetime' && (
+              <TouchableOpacity style={s.premiumBtn} onPress={() => router.push('/premium' as any)}>
+                <Text style={s.premiumBtnTxt}>{t('settings.upgradeLifetime')}</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               onPress={() => { hasCustomerCenter() ? presentCustomerCenter() : router.push('/premium' as any); }}
               style={{ marginTop: 8 }}
             >
-              <Text style={{ color: Colors.text2, fontSize: 13 }}>Valdyti prenumeratą</Text>
+              <Text style={{ color: Colors.text2, fontSize: 13 }}>{t('settings.manageSub')}</Text>
             </TouchableOpacity>
           </View>
         )}
